@@ -1,25 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ali Raza Badminton Club</title>
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#2196f3">
-  <link rel="icon" href="icons/icon-192.png">
-
-  <style>
-    body { font-family:'Poppins',sans-serif; background:#e3f2fd; margin:0; padding:20px; text-align:center; }
-    .container { max-width:700px; margin:auto; background:#fff; padding:25px; border-radius:15px; box-shadow:0 6px 20px rgba(0,0,0,0.1); }
-    /* Add the rest of your CSS here */
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ali Raza Badminton Club</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2196f3">
+<link rel="icon" href="icons/icon-192.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+<style>
+  body { font-family:'Poppins',sans-serif; background:#e3f2fd; margin:0; padding:20px; text-align:center; }
+  .container { max-width:700px; margin:auto; background:#fff; padding:25px; border-radius:15px; box-shadow:0 6px 20px rgba(0,0,0,0.1); }
+  input, select { width:45%; padding:12px; margin:8px 1%; border-radius:10px; border:1px solid #ccc; font-size:16px; }
+  .score-line { display:flex; justify-content:center; align-items:center; gap:20px; font-size:20px; margin:10px 0; }
+  .score { font-size:30px; font-weight:bold; color:#2196f3; }
+  button { padding:8px 14px; border:none; border-radius:8px; font-size:14px; cursor:pointer; color:#fff; }
+  .add { background:#4caf50; } .subtract { background:#f44336; } .update { background:#2196f3; } .reset { background:#9c27b0; } .delete-btn { background:#f44336; font-size:12px; }
+  .controls { display:flex; justify-content:center; flex-wrap:wrap; gap:20px; margin-top:20px; }
+  #history, #playerHistory { margin-top:20px; border-top:1px solid #ccc; padding-top:10px; text-align:left; }
+  .table-wrapper { overflow-x:auto; width:100%; }
+  table { width:100%; border-collapse:collapse; min-width:600px; }
+  th, td { border:1px solid #ccc; padding:6px; font-size:13px; text-align:center; }
+  th { background:#2196f3; color:#fff; }
+  .download-btn { background:#ff9800; }
+  .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  @media (max-width:480px){ input, select { width:100%; } .score-line { flex-wrap:wrap; } }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>Ali Raza Badminton Club</h1>
-    <!-- Your app content here -->
+<div class="container">
+  <h1>Ali Raza Badminton Club</h1>
+  <input id="playerAName" placeholder="Player A Name" oninput="updateVSLine()" />
+  <input id="playerBName" placeholder="Player B Name" oninput="updateVSLine()" />
+  <div id="vsLine">Player A VS Player B</div>
+  <select id="matchType">
+    <option value="Round Match">Round Match</option>
+    <option value="Quarter-Final">Quarter-Final</option>
+    <option value="Semi-Final">Semi-Final</option>
+    <option value="Final">Final</option>
+  </select>
+  <div class="score-line">
+    <span id="nameA">Player A</span>
+    <span class="score" id="scoreA">0</span>
+    <button class="add" onclick="addPoint('A')">+1</button>
+    <button class="subtract" onclick="subtractPoint('A')">-1</button>
+  </div>
+  <div class="score-line">
+    <span id="nameB">Player B</span>
+    <span class="score" id="scoreB">0</span>
+    <button class="add" onclick="addPoint('B')">+1</button>
+    <button class="subtract" onclick="subtractPoint('B')">-1</button>
+  </div>
+  <div class="controls">
+    <button class="update" onclick="updateAndSaveMatch()">Update</button>
+    <button class="reset" onclick="nextMatch()">Next Match</button>
+  </div>
+  <div id="result"></div>
+
+  <!-- PLAYER SUMMARY TABLE -->
+  <div id="playerHistory">
+    <div class="section-header">
+      <h3>Players Record Summary</h3>
+      <button class="download-btn" onclick="exportPlayerSummaryPDF()">Download</button>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Player</th><th>Total Matches</th><th>Wins</th><th>Losses</th><th>Points</th><th>Progress</th>
+          </tr>
+        </thead>
+        <tbody id="playerTable"></tbody>
+      </table>
+    </div>
   </div>
 
-  <script src="service-worker.js"></script>
+  <!-- MATCH HISTORY TABLE -->
+  <div id="history">
+    <div class="section-header">
+      <h3>Match History</h3>
+      <button class="download-btn" onclick="exportMatchHistoryPDF()">Download</button>
+    </div>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Type</th><th>Players</th><th>Player A</th><th>Player B</th><th>Winner</th><th>Date</th><th>Delete</th>
+          </tr>
+        </thead>
+        <tbody id="matchList"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="service-worker.js"></script>
+<script>
+  // Your existing JS code here (addPoint, subtractPoint, updateVSLine, updateAndSaveMatch, etc.)
+</script>
 </body>
 </html>
+
